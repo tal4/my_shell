@@ -9,7 +9,8 @@ namespace shell {
             std::string current;
             bool in_quotes = false;
             
-        for (char c : line) {
+        for (size_t i = 0; i < line.size(); ++i) {
+            char c = line[i];
             if (c == '#') {  // Handle comments: ignore the rest of the line after '#'
                 break;
             }
@@ -21,16 +22,16 @@ namespace shell {
                     current.clear();
                 }
             } else if ((c == '>' || c == '<' || c == '&' || c == '|') && !in_quotes) {      // Handle special characters as separate tokens
-                if (current == ">" && c == '>') {               // Handle '>>' as a single token  
-                    tokens.push_back(">>");
-                    current.clear();
-                } else if (!current.empty()) {                  // Push the current token before the special character
+                if (!current.empty()) {                  // Push the current token before the special character
                     tokens.push_back(current);
-                    tokens.push_back(std::string(1, c));
-                    current.clear();                   
-                } else {
-                    tokens.push_back(std::string(1, c));
+                    current.clear();
                 }
+                if (c == '>' && i + 1 < line.size() && line[i + 1] == '>') {  // Handle '>>' as a single token
+                    tokens.push_back(">>");
+                    i++;  
+                } else {
+                    tokens.push_back(std::string(1, c));  // Push the special character as a token
+                }                  
             } else {                    // Regular character, add to current token
                 current += c;  
             }
