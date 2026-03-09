@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "parser.h"
+#include "executor.h"
 
 int main() {
     std::string line;
@@ -18,16 +19,7 @@ int main() {
         }
 
         Command cmd = shell::parse_command(line);
-        std::cout << "Command name: " << cmd.name << std::endl;
-        std::cout << "Arguments: ";
-        for (const auto& arg : cmd.args) {
-            std::cout << "[" << arg << "] ";
-        }
-        std::cout << std::endl;
-        std::cout << "Input file: " << (cmd.input_file.empty() ? "None" : cmd.input_file) << std::endl;
-        std::cout << "Output file: " << (cmd.output_file.empty() ? "None" : cmd.output_file) << std::endl;
-        std::cout << "Append: " << (cmd.append ? "Yes" : "No") << std::endl;
-        std::cout << "Background: " << (cmd.background ? "Yes" : "No") << std::endl;
+        shell::execute_command(cmd);
     }
     return 0;
 }
