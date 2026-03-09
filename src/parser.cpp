@@ -4,6 +4,8 @@
 #include <string>
 
 namespace shell {
+
+    // Tokenize the input line into a vector of strings, handling quotes and special characters
     std::vector<std::string> tokenize(const std::string& line) {
             std::vector<std::string> tokens;
             std::string current;
@@ -11,7 +13,7 @@ namespace shell {
             
         for (size_t i = 0; i < line.size(); ++i) {
             char c = line[i];
-            if (c == '#') {  // Handle comments: ignore the rest of the line after '#'
+            if (c == '#' && !in_quotes) {  // Handle comments: ignore the rest of the line after '#'
                 break;
             }
             if (c == '"') {                 // Toggle in_quotes when we encounter a double quote
@@ -40,5 +42,37 @@ namespace shell {
             tokens.push_back(current);
         }
         return tokens;
+    }
+
+    Command parse_command(const std::string &line)
+    {
+        Command cmd;
+        auto tokens = tokenize(line);
+        if (tokens.empty()) {
+            return cmd;
+        }
+        cmd.name = tokens[0];
+
+        for (size_t i  = 0; i < tokens.size(); i++) {
+            if (tokens[i] == ">") {
+                if (i + 1 < tokens.size()) {
+                    cmd.output_file = tokens[++i];
+                }
+            } else if (tokens[i] == ">>") {
+                if (i + 1 < tokens.size()) {
+                    cmd.output_file = tokens[++i];
+                    cmd.append = true;
+                }
+            } else if (tokens[i] == "<") {
+                if (i + 1 < tokens.size()) {
+                    cmd.input_file = tokens[++i];
+                }
+            } else if (tokens[i] == "&") {
+                cmd.background = true;
+            } else {
+                cmd.args.push_back(tokens[i]);
+            }
+        }
+        return cmd;
     }
 }
