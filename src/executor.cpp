@@ -1,4 +1,5 @@
 #include "executor.h"
+#include "builtins.h"
 #include <iostream>
 #include <vector>
 #include <unistd.h>
@@ -17,20 +18,22 @@ namespace shell {
         }
         c_args.push_back(nullptr); 
 
-        pid_t pid = fork();
-        if (pid < 0) {                                                      // Fork failed
-            perror("fork failed");
-        } else if (pid == 0) {
-            if (execvp(cmd.name.c_str(), c_args.data()) == -1) {            // Execution failed
-                perror("execvp failed");
-                exit(EXIT_FAILURE);
-            }
-        } else {
-            if (!cmd.background) {
-                int status;
-                waitpid(pid, &status, 0);
+        if(!handle_builtin(cmd)) {                              // Not a built-in command, execute as external command
+            pid_t pid = fork();
+            if (pid < 0) {                                                      // Fork failed
+                perror("fork failed");
+            } else if (pid == 0) {
+                if (execvp(cmd.name.c_str(), c_args.data()) == -1) {            // Execution failed
+                    perror("execvp failed");
+                    exit(EXIT_FAILURE);
+                }
             } else {
-                std::cout << "Process " << pid << " running in background" << std::endl;
+                if (!cmd.background) {
+                    int status;
+                    waitpid(pid, &status, 0);
+                } else {
+                    std::cout << "Process " << pid << " running in background" << std::endl;
+                }
             }
         }
     }
