@@ -23,7 +23,19 @@ namespace shell {
             pid_t pid = fork();
             if (pid < 0) {                                                      // Fork failed
                 perror("fork failed");
-            } else if (pid == 0) {
+            } else if (pid == 0) {                                              // Child process
+                if (!cmd.input_file.empty())  {
+                    int fd = open(cmd.input_file.c_str(), O_RDONLY);
+                    if (fd < 0) {
+                        perror("Failed to open input file");
+                        exit(EXIT_FAILURE);
+                    }
+                    if (dup2(fd, STDIN_FILENO) < 0) {
+                        perror("Failed to redirect input");
+                        exit(EXIT_FAILURE);
+                    }
+                    close(fd);
+                }
                 if (!cmd.output_file.empty()) {
                     int flags = O_WRONLY | O_CREAT;
                     if (cmd.append) {
