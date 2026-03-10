@@ -4,6 +4,7 @@
 #include <vector>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <fcntl.h>
 
 
 namespace shell {
@@ -23,6 +24,24 @@ namespace shell {
             if (pid < 0) {                                                      // Fork failed
                 perror("fork failed");
             } else if (pid == 0) {
+                if (!cmd.output_file.empty()) {
+                    int flags = O_WRONLY | O_CREAT;
+                    if (cmd.append) {
+                        flags |= O_APPEND;
+                    } else {
+                        flags |= O_TRUNC;
+                    }
+                    int fd = open(cmd.output_file.c_str(), flags, 0644);
+                    if (fd < 0) {
+                        perror("Failed to open output file");
+                        exit(EXIT_FAILURE);
+                    }
+                    if (dup2(fd, STDOUT_FILENO) < 0) {
+                        perror("Failed to redirect output");
+                        exit(EXIT_FAILURE);
+                    }
+                    close(fd);
+                }
                 if (execvp(cmd.name.c_str(), c_args.data()) == -1) {            // Execution failed
                     perror("execvp failed");
                     exit(EXIT_FAILURE);
