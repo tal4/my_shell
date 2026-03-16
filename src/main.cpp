@@ -17,13 +17,11 @@ int main() {
             std::cout << std::endl; 
             break;
         }
-        if (line.empty()) {                        // Ignore empty lines
+        if (line.empty()) {                        // Ignore empty line. 
             continue;
         }
         auto commands = shell::parse_command(line);
-        for (const auto& cmd : commands) {
-            shell::execute_command(cmd);
-        }
+        shell::execute_pipeline(commands);
     }
     return 0;
 }

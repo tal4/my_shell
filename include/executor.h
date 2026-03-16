@@ -3,7 +3,7 @@
 
 namespace shell {
 
-    // Execute the given Command struct.
-    void execute_command(const Command& cmd);
+    // Execute a pipeline of commands, connecting their input and output as needed.
+    void execute_pipeline(const std::vector<Command>& pipeline);
 
 }
