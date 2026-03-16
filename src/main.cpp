@@ -20,9 +20,10 @@ int main() {
         if (line.empty()) {                        // Ignore empty lines
             continue;
         }
-
-        Command cmd = shell::parse_command(line);
-        shell::execute_command(cmd);
+        auto commands = shell::parse_command(line);
+        for (const auto& cmd : commands) {
+            shell::execute_command(cmd);
+        }
     }
     return 0;
 }

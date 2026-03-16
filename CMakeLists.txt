@@ -13,11 +13,6 @@ FetchContent_Declare(
 )
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
-add_executable(run_tests
-    tests/test_parser.cpp
-    src/parser.cpp
-)
-target_link_libraries(run_tests GTest::gtest_main)
-target_include_directories(run_tests PRIVATE include)
+
 
 

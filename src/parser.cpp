@@ -43,17 +43,21 @@ namespace shell {
         return tokens;
     }
 
-    Command parse_command(const std::string &line)
+    std::vector<Command> parse_command(const std::string &line)
     {
-        Command cmd;
+        std::vector<Command> pipeline;
         auto tokens = tokenize(line);
         if (tokens.empty()) {
-            return cmd;
+            return pipeline;
         }
-        cmd.name = tokens[0];
-
+        Command cmd;
         for (size_t i  = 0; i < tokens.size(); i++) {
-            if (tokens[i] == ">") {
+            if (tokens[i] == "|") {
+                if (!cmd.name.empty()) {
+                    pipeline.push_back(cmd);
+                    cmd = Command(); 
+                }                
+            } else if (tokens[i] == ">") {
                 if (i + 1 < tokens.size()) {
                     cmd.output_file = tokens[++i];
                 }
@@ -69,9 +73,15 @@ namespace shell {
             } else if (tokens[i] == "&") {
                 cmd.background = true;
             } else {
+                if (cmd.name.empty()) {
+                    cmd.name = tokens[i];
+                }
                 cmd.args.push_back(tokens[i]);
             }
         }
-        return cmd;
+        if (!cmd.name.empty()) {                // push the last command if it exists.
+            pipeline.push_back(cmd);
+        }
+        return pipeline;
     }
 }
