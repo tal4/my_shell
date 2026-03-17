@@ -20,6 +20,18 @@ int main() {
         if (line.empty()) {                        // Ignore empty line. 
             continue;
         }
+        // Handle multi-line input. 
+        while (line.back() == '\\') {
+            line.pop_back();
+            std::string next_line;
+            if (!std::getline(std::cin, next_line)) {
+                break;
+            }
+            if (next_line.empty()) {
+                break;
+            }
+            line += (" " + next_line);
+        }
         auto commands = shell::parse_command(line);
         shell::execute_pipeline(commands);
     }
