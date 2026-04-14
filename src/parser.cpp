@@ -1,7 +1,9 @@
-#include "parser.h"
-#include <sstream>
 #include <vector>
 #include <string>
+
+#include "parser.h"
+#include "command.h"
+#include "pipeline.h"
 
 namespace shell {
 
@@ -43,35 +45,34 @@ namespace shell {
         return tokens;
     }
 
-    std::vector<Command> parse_command(const std::string &line)
-    {
-        std::vector<Command> pipeline;
+        pipeline parse_command(const std::string& line) {
+        pipeline pip = pipeline();
         auto tokens = tokenize(line);
         if (tokens.empty()) {
-            return pipeline;
+            return pip;
         }
-        Command cmd;
+        command cmd;
         for (size_t i  = 0; i < tokens.size(); i++) {
             if (tokens[i] == "|") {
                 if (!cmd.name.empty()) {
-                    pipeline.push_back(cmd);
-                    cmd = Command(); 
+                    pip.commands.push_back(cmd);
+                    cmd = command(); 
                 }                
             } else if (tokens[i] == ">") {
                 if (i + 1 < tokens.size()) {
-                    cmd.output_file = tokens[++i];
+                    pip.output_file = tokens[++i];
                 }
             } else if (tokens[i] == ">>") {
                 if (i + 1 < tokens.size()) {
-                    cmd.output_file = tokens[++i];
-                    cmd.append = true;
+                    pip.output_file = tokens[++i];
+                    pip.append = true;
                 }
             } else if (tokens[i] == "<") {
                 if (i + 1 < tokens.size()) {
-                    cmd.input_file = tokens[++i];
+                    pip.input_file = tokens[++i];
                 }
             } else if (tokens[i] == "&") {
-                cmd.background = true;
+                pip.background = true;
             } else {
                 if (cmd.name.empty()) {
                     cmd.name = tokens[i];
@@ -80,8 +81,8 @@ namespace shell {
             }
         }
         if (!cmd.name.empty()) {                // push the last command if it exists.
-            pipeline.push_back(cmd);
+            pip.commands.push_back(cmd);
         }
-        return pipeline;
+        return pip;
     }
 }

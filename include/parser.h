@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+
 #include "command.h"
 
 namespace shell {
@@ -9,6 +10,6 @@ namespace shell {
     std::vector<std::string> tokenize(const std::string& line);
 
     // Parse the command line into a vector of Command structs, handling arguments and redirections.
-    std::vector<Command> parse_command(const std::string& line);
-
+    pipeline parse_command(const std::string& line);
+    
 }
