@@ -3,22 +3,18 @@
 #include <string>
 #include <vector>
 
-struct Command {
-    std::string name;
-    std::vector<std::string> args;
+namespace shell {
+    struct command {
+        std::string name;
+        std::vector<std::string> args;
+        int input_fd = -1;
+        int output_fd = -1;
 
-    std::string input_file;
-    std::string output_file;
-    bool append = false;
-
-    bool background = false;
-
-    void clear() {
-        name.clear();
-        args.clear();
-        input_file.clear();
-        output_file.clear();
-        append = false;
-        background = false;
-    }
-};
+        void clear() {
+            name.clear();
+            args.clear();
+            input_fd = -1;
+            output_fd = -1;
+        }
+    };
+}
