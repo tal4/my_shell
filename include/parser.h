@@ -11,5 +11,5 @@ namespace shell {
 
     // Parse the command line into a vector of Command structs, handling arguments and redirections.
     pipeline parse_command(const std::string& line);
-    
+
 }
