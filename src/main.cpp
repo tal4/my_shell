@@ -1,10 +1,13 @@
 #include <unistd.h>
 #include <iostream>
 #include <string>
+#include <signal.h>
+
 #include "parser.h"
 #include "executor.h"
 
 int main() {
+    signal(SIGINT, SIG_IGN); // auto-reap background children
     char cwd[1024];
     std::string line;
     while(true) {
