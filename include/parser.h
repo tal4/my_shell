@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "command.h"
+#include "pipeline.h"
 
 namespace shell {
     // Tokenize the input line into a vector of strings, handling quotes and special characters.
