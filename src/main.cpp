@@ -2,7 +2,10 @@
 #include <iostream>
 #include <string>
 #include <signal.h>
+#include <termios.h>
 
+
+#include "main.h"
 #include "parser.h"
 #include "executor.h"
 
@@ -39,4 +42,17 @@ int main() {
         shell::execute_pipeline(commands);
     }
     return 0;
+}
+
+void set_raw_mode(bool enable) {
+    static struct termios oldt;
+    struct termios newt;
+    if (enable) {
+        tcgetattr(STDIN_FILENO, &oldt);
+        newt = oldt;
+        newt.c_lflag &= ~(ICANON | ECHO);
+        tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    } else {
+        tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    }
 }
